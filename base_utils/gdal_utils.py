@@ -6,35 +6,12 @@ if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
 
 import os.path
-import rasterio
 from osgeo import gdal,ogr,osr
 import numpy as np
 from threading import Lock
 from tqdm import tqdm
 gdal_lock = Lock()
 nodata_value = 0
-'''颜色条'''
-VOC_COLORMAP = [[0, 0, 0], [128, 0, 0], [0, 128, 0], [128, 128, 0],
-                [0, 0, 128], [128, 0, 128], [0, 128, 128], [128, 128, 128],
-                [64, 0, 0], [192, 0, 0], [64, 128, 0], [192, 128, 0],
-                [64, 0, 128], [192, 0, 128], [64, 128, 128], [192, 128, 128],
-                [0, 64, 0], [128, 64, 0], [0, 192, 0], [128, 192, 0],
-                [0, 64, 128]]
-colors = [
-    '#C0E2FD', '#FEC0C1', '#CDC6FF', '#FDC0F7', '#F3D8F1',
-    '#D6EBBF', '#E1CAF7', '#BFDCE2', '#F8F0BE', '#BEEFBF',
-    '#F8C9C8', '#C0E2D2', '#E9BFC0', '#E3E3E3', '#BFBFBF',
-    '#DEECF6', '#AFCBE2', '#E2F2CD', '#B6DAA7', '#F9D5D5',
-    '#EF9BA1', '#FBE3C0', '#FBC99A', '#EBE0EF', '#C2B1D7',
-]
-def label_to_rgb(t):
-    '''根据颜色条将label映射到rgb图像'''
-    H, W = t.shape
-    t=t.reshape(-1)
-    rgb=[VOC_COLORMAP[i] for i in t ]
-    rgb=np.array(rgb,dtype=np.uint8)
-    rgb=rgb.reshape(H,W,3)
-    return rgb
 
 def write_data_to_tif(output_file, data, geotransform, projection, nodata_value=nodata_value, dtype=gdal.GDT_Float32):
     """
@@ -69,33 +46,6 @@ def write_data_to_tif(output_file, data, geotransform, projection, nodata_value=
     dataset = None
     return output_file
 
-def write_data_to_tif_rasterio(output_file, data, nodata_value=None, dtype='float32'):
-    """
-    使用 rasterio 将数据写入 GeoTIFF 文件, 不要投影和坐标
-    参数:
-        output_file: str - 输出的 GeoTIFF 文件路径
-        data: ndarray - 写入的数据，形状为 (rows, cols, bands)
-        nodata_value: float/int - NoData 值
-        dtype: str - 数据类型，如 'float32', 'uint8' 等
-    返回:
-        str - 输出文件路径
-    """
-    height, width, bands = data.shape
-    data = data.transpose(2,0,1)
-    # 创建元数据字典
-    metadata = {
-        'driver': 'GTiff',
-        'dtype': dtype,
-        'count': bands,
-        'width': width,
-        'height': height,
-    }
-    # 设置 NoData 值
-    if nodata_value is not None:
-        metadata['nodata'] = nodata_value
-    with rasterio.open(output_file, 'w', **metadata) as dst:
-        dst.write(data.astype(dtype))
-    return output_file
 def read_tif_with_gdal(tif_path):
     '''读取栅格原始数据(形状为 bands x rows x cols)'''
     gdal.UseExceptions()
@@ -103,14 +53,6 @@ def read_tif_with_gdal(tif_path):
         dataset = gdal.Open(tif_path)
         dataset = dataset.ReadAsArray()
     return dataset
-
-def read_tif_use_rasterio(tif_path):
-    '''这个模块的读取速度较低'''
-    with rasterio.open(tif_path) as dataset:
-        # 直接读取所有波段的数据 (形状为 bands x rows x cols)
-        image_data = dataset.read()
-    return image_data
-
 def crop_image_by_mask(data, mask, geotransform, projection, filepath, block_size=30, name="Block_", dtype = gdal.GDT_Float32):
     """
     根据 mask 的类别，裁剪影像为 30x30 的小块

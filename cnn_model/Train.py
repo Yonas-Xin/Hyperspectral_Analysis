@@ -1,12 +1,5 @@
 import os
-import sys
 from pathlib import Path
-project_root = Path(__file__).parent.parent  # 根据实际情况调整
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
-'''保证项目迁移能够正确导包'''
-
-
 import time
 import torch
 import torch.nn as nn
@@ -18,7 +11,6 @@ from Models import CNN_3d
 from multiprocessing import cpu_count
 from Data import Moni_leaning_dataset,MoniHDF5_leaning_dataset
 from torch.optim.lr_scheduler import StepLR,ExponentialLR,ReduceLROnPlateau
-
 
 from base_utils.utils import read_txt_to_list
 from base_utils.Dataloader_X import DataLoaderX
@@ -58,8 +50,8 @@ if __name__ == '__main__':
     model = CNN_3d(out_embedding=24, out_classes=8) # 模型配置
     config_model_name = "CNN_3d"  # 保存的模型名称
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu") # 显卡设置
-    dataset_train = r'D:\Programing\pythonProject\Hyperspectral_Analysis\cnn_model\train_datasets.h5'
-    dataset_eval = r'D:\Programing\pythonProject\Hyperspectral_Analysis\cnn_model\eval_datasets.h5'
+    dataset_train = r'D:\Programing\pythonProject\data_store\train_datasets.h5'
+    dataset_eval = r'D:\Programing\pythonProject\data_store\eval_datasets.h5'
     if_full_cpu = True # 是否全负荷使用cpu
     if_load_model = False # 是否从上次保存的模型重新开始训练
     ck_pth = None # 保存的权重文件

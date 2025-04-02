@@ -1,15 +1,11 @@
 '''
 根据样本.shp文件进行样本的裁剪
 '''
-import os
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent  # 根据实际情况调整
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
 
 from base_utils.gdal_utils import crop_image_by_mask,write_list_to_txt,vector_to_mask
-from base_utils.core import *
+from base_utils.core import Hyperspectral_Image
+import numpy as np
+import os
 
 
 def concrete_sample_name(dataset_paths1, dataset_paths2):

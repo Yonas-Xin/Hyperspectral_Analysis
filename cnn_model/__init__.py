@@ -1,1 +1,1 @@
-from cnn_model.Predict import Block_Generator,show_img
+from .Predict import Block_Generator,show_img

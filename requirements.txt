@@ -1,14 +1,15 @@
-GDAL==3.9.2
 h5pickle==0.4.2
 h5py==3.13.0
 matplotlib==3.10.1
 numpy==2.2.4
-plotly==5.24.1
 plotly==6.0.0
 prefetch_generator==1.0.3
 scikit_learn==1.6.1
 scipy==1.15.2
-skimage==0.0
-torch==2.5.1+cu124
-torchvision==0.20.1+cu124
+scikit-image==0.25.0
+# torch==2.5.1+cu124
+# torchvision==0.20.1+cu124
+# pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+# GDAL==3.10.2
+# pip install .\Hyperspectral_Analysis\base_utils\gdal-3.10.2-cp310-cp310-win_amd64.whl # 通过这段指令给环境安装gdal
 tqdm==4.67.1

@@ -1,16 +1,11 @@
-import os.path
+from base_utils.core import Hyperspectral_Image
+import numpy as np
 import os
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent  # 根据实际情况调整
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
-
-from base_utils.core import *
 from skimage.segmentation import slic
 from base_utils.gdal_utils import mask_to_vector_gdal
 import matplotlib.pyplot as plt
-
+import matplotlib
+matplotlib.use('TkAgg')
 def superpixel_segmentation(data_pca, n_segments=1024, compactness=10):
     # img_lab = color.rgb2lab(data_pca) # rgb转lab
     segments = slic(
@@ -114,7 +109,7 @@ if __name__ == '__main__':
     out_shp_file = r'D:\Programing\pythonProject\St_Analyse\Position_mask\research1_init_mask.shp'
 
     img = Hyperspectral_Image()
-    img.init(r"D:\Data\yanjiuqu\预处理\crop_for_research.dat")  # 使用原始数据的增强影像
+    img.init(r"D:\Programing\pythonProject\data_store\research_area1.dat")  # 使用原始数据的增强影像
     print(f'原始像素数量：{img.rows * img.cols}')
     # dataset = img.get_dataset()
     img.image_enhance(n_components=3) # 降维
@@ -128,7 +123,7 @@ if __name__ == '__main__':
     # """随机取样"""
     if os.path.exists(out_shp_file):
         raise ValueError('文件已存在，重新指定文件名')
-    hetero_dict = calculate_spectral_heterogeneity(img.get_dataset(), segments) # 计算光谱异质性
-    mask = generate_adaptive_mask(segments, hetero_dict, base_samples_ratio=0.003, max_samples_ratio=0.005) # 训练模型建议两个值一样
-    mask_to_vector_gdal(mask, img.dataset.GetGeoTransform(),img.dataset.GetProjection(),output_shapefile=out_shp_file)
-    print(f"采样数量为：{np.sum(mask)}")
+    # hetero_dict = calculate_spectral_heterogeneity(img.get_dataset(), segments) # 计算光谱异质性
+    # mask = generate_adaptive_mask(segments, hetero_dict, base_samples_ratio=0.003, max_samples_ratio=0.005) # 训练模型建议两个值一样
+    # mask_to_vector_gdal(mask, img.dataset.GetGeoTransform(),img.dataset.GetProjection(),output_shapefile=out_shp_file)
+    # print(f"采样数量为：{np.sum(mask)}")

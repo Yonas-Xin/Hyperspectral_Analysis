@@ -10,7 +10,7 @@ from osgeo import gdal
 from scipy.ndimage import gaussian_filter1d
 from sklearn.preprocessing import StandardScaler
 import tempfile
-from base_utils.gdal_utils import nodata_value,mask_to_vector_gdal,vector_to_mask
+from .gdal_utils import nodata_value,mask_to_vector_gdal,vector_to_mask
 gdal.UseExceptions()
 class Hyperspectral_Image:
     '''该类的数据形状一律为[H,W,C]'''

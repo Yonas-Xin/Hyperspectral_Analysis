@@ -1,11 +1,5 @@
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent  # 根据实际情况调整
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
-'''保证项目迁移能够正确导包'''
-
 import os
+from pathlib import Path
 from Data import SSF,SSF_3D,SSF_3D_H5
 from base_utils.Dataloader_X import DataLoaderX
 import torch
@@ -47,7 +41,7 @@ if __name__ =="__main__":
     init_lr = 1e-5    # lr
     min_lr = 1e-7
     learning_mode = 0 # 设置为1适合模型调整，0适合模型初期训练
-    current_script_path = os.getcwd() # 获取当前运行脚本的目录
+    current_script_path = Path(__file__).parent # 获取当前运行脚本的目录
     config_model_name = "F3FN_3d_pretrain"   # 模型名称
     # pretrain_model_name = './models/F3FN_retrain_202503291355.pth' # 预训练模型
 
@@ -62,8 +56,8 @@ if __name__ =="__main__":
     '''数据集和增强模块'''
     current_time = get_systime()
     output_name = config_model_name +'_' + current_time  # 模型输出名称
-    image_paths = search_files_in_directory(r'D:\Programing\pythonProject\Hyperspectral_Analysis\data_process\block_clip','.tif')
-    dataset = SSF_3D_H5('contrastive_learning_138_25_25.h5')
+    # image_paths = search_files_in_directory(r'D:\Programing\pythonProject\Hyperspectral_Analysis\data_process\block_clip','.tif')
+    dataset = SSF_3D_H5('D:\Programing\pythonProject\data_store\contrastive_learning_138_25_25.h5')
     info_nce = InfoNCELoss(temperature=0.07)  # 损失函数
     dataloader = DataLoaderX(dataset, batch_size=batch, shuffle=True, pin_memory=True, num_workers=4)  # 数据迭代器
     augment = BatchAugment_3d(flip_prob=0.5, rot_prob=0.5, gaussian_noise_std=(0.006, 0.012))  # 数据特征转换

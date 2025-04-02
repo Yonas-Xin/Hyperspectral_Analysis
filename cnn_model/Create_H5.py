@@ -1,11 +1,4 @@
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent  # 根据实际情况调整
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
-'''保证项目迁移能够正确导包'''
-
-from Data import Moni_leaning_dataset,read_tif_with_gdal
+from .Data import Moni_leaning_dataset,read_tif_with_gdal
 from base_utils.Dataloader_X import DataLoaderX
 from tqdm import tqdm
 from base_utils.utils import read_txt_to_list

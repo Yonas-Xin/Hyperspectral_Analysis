@@ -17,7 +17,7 @@ class IS_Generator(Dataset):
     def __init__(self, whole_space, whole_spectral, block_size=25):
         '''将整幅图像裁剪成为适用于模型输入的数据集形式
         whole_space[H,W,3]'''
-        self.rows, self.cols, _ = whole_space.shape
+        _, self.rows, self.cols = whole_space.shape
         self.block_size = block_size
         if block_size % 2 == 0:
             left_top = int(block_size / 2 - 1)
@@ -44,8 +44,8 @@ class IS_Generator(Dataset):
         return block, spectral
 
     def get_samples(self,row,col):
-        block = self.whole_space[row:row + self.block_size, col:col + self.block_size, :]
-        spectral = self.whole_spectral[row, col:col+1, :]
+        block = self.whole_space[:, row:row + self.block_size, col:col + self.block_size]
+        spectral = self.whole_spectral[:, row, col:col+1]
         return block,spectral
 
 class Block_Generator(Dataset):
@@ -53,7 +53,7 @@ class Block_Generator(Dataset):
     def __init__(self, data, block_size=25):
         '''将整幅图像裁剪成为适用于模型输入的数据集形式
         data[C,H,W]'''
-        self.rows, self.cols, _ = data.shape
+        _, self.rows, self.cols = data.shape
         self.block_size = block_size
         if block_size % 2 == 0:
             left_top = int(block_size / 2 - 1)
@@ -78,7 +78,6 @@ class Block_Generator(Dataset):
 
     def get_samples(self,row,col):
         block = self.whole_space[:,row:row + self.block_size, col:col + self.block_size]
-        block = block[None,:,:,:]
         return block
 def show_img(data:torch.Tensor):
     data = data.numpy()
@@ -91,7 +90,7 @@ if __name__ == '__main__':
     batch = 4
     model_path  = '.models/'
     img = Hyperspectral_Image()
-    img.init("D:\Data\yanjiuqu\预处理\crop_for_research.dat", init_fig=False)
+    img.init(r"D:\Programing\pythonProject\data_store\research_area1.dat", init_fig=False)
     dataset = Block_Generator(img.get_dataset(scale=1e-4).transpose(2,0,1), block_size=25)
     dataloader = DataLoaderX(dataset, batch_size=batch, shuffle=False, pin_memory=True, num_workers=4)
 
@@ -107,9 +106,9 @@ if __name__ == '__main__':
     with torch.no_grad():
         for block in tqdm(dataloader, total=len(dataloader)):
             batch = block.shape[0]
-            show_img(block[0,0,:,:,:] .cpu())# 展示滑动窗口
+            show_img(block[0,:,:,:] .cpu())# 展示滑动窗口
             model.eval()
-            block = block.to(device)
+            block = block.unqueeze(1).to(device)
             outputs = model(block)
             _, predicted = torch.max(outputs, 1)
             predict_map[idx:idx+batch,] = predicted.cpu().numpy()

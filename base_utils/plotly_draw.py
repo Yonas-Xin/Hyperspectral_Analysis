@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from gdal_utils import colors
+from .utils import colors
 
 def show_scatter(data_pca, mask):
     mask = mask[mask != 0]

@@ -1,15 +1,11 @@
 '''
 从分类结果上看，高斯混合模型的分类结果较KMeans结果较优，Ncut模型分类器选择高斯混合模型
 '''
-import os
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent  # 根据实际情况调整
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
 
 import numpy as np
-from base_utils.core import *
+from base_utils.core import Hyperspectral_Image
+import numpy as np
+import os
 import matplotlib
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans, SpectralClustering
@@ -115,7 +111,6 @@ def load_deep_feature(path):
 
 if __name__ == '__main__':
     """数据读取，数据增强，样本随机选择"""
-    gdal.UseExceptions()
     img = Hyperspectral_Image()
     input_shp_file = r'D:\Programing\pythonProject\St_Analyse\Position_mask\research1_init_mask.shp'
     deep_feature_npz_file = '../datasets/Deep_30Feature_FS3Ndrop_research1_init8220.npz'

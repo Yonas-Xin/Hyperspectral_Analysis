@@ -1,11 +1,26 @@
-import os
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent  # 根据实际情况调整
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
-
-    
+import numpy as np
+'''颜色条'''
+VOC_COLORMAP = [[0, 0, 0], [128, 0, 0], [0, 128, 0], [128, 128, 0],
+                [0, 0, 128], [128, 0, 128], [0, 128, 128], [128, 128, 128],
+                [64, 0, 0], [192, 0, 0], [64, 128, 0], [192, 128, 0],
+                [64, 0, 128], [192, 0, 128], [64, 128, 128], [192, 128, 128],
+                [0, 64, 0], [128, 64, 0], [0, 192, 0], [128, 192, 0],
+                [0, 64, 128]]
+colors = [
+    '#C0E2FD', '#FEC0C1', '#CDC6FF', '#FDC0F7', '#F3D8F1',
+    '#D6EBBF', '#E1CAF7', '#BFDCE2', '#F8F0BE', '#BEEFBF',
+    '#F8C9C8', '#C0E2D2', '#E9BFC0', '#E3E3E3', '#BFBFBF',
+    '#DEECF6', '#AFCBE2', '#E2F2CD', '#B6DAA7', '#F9D5D5',
+    '#EF9BA1', '#FBE3C0', '#FBC99A', '#EBE0EF', '#C2B1D7',
+]
+def label_to_rgb(t):
+    '''根据颜色条将label映射到rgb图像'''
+    H, W = t.shape
+    t=t.reshape(-1)
+    rgb=[VOC_COLORMAP[i] for i in t ]
+    rgb=np.array(rgb,dtype=np.uint8)
+    rgb=rgb.reshape(H,W,3)
+    return rgb
 def search_files_in_directory(directory, extension):
     """
     搜索指定文件夹中所有指定后缀名的文件，并返回文件路径列表,只适用于不需要标签训练的模型，因为返回的列表顺序可能和
