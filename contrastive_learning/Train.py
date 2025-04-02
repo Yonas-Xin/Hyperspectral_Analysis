@@ -33,7 +33,7 @@ def print_info(mode=True):
     '''输出硬件信息'''
     print('Is cuda availabel: ', torch.cuda.is_available())  # 是否支持cuda
     print('Cuda device count: ', torch.cuda.device_count())  # 显卡数
-    print('Current device: ', torch.cuda.current_device())  # 当前计算的显卡id
+    # print('Current device: ', torch.cuda.current_device())  # 当前计算的显卡id
 
 def get_systime():
     return datetime.now().strftime("%Y%m%d%H%M") # 记录系统时间
@@ -44,7 +44,7 @@ def join_path(path1, path2):
 if __name__ =="__main__":
     """基础配置"""
     epochs = 300  # epoch
-    batch = 2    # batch
+    batch = 24    # batch
     init_lr = 1e-5    # lr
     min_lr = 1e-7
     learning_mode = 0 # 设置为1适合模型调整，0适合模型初期训练
@@ -64,14 +64,14 @@ if __name__ =="__main__":
     current_time = get_systime()
     output_name = config_model_name +'_' + current_time  # 模型输出名称
     # image_paths = search_files_in_directory(r'D:\Programing\pythonProject\Hyperspectral_Analysis\data_process\block_clip','.tif')
-    dataset = SSF_3D_H5('D:\Programing\pythonProject\data_store\contrastive_learning_138_25_25.h5')
+    dataset = SSF_3D_H5('/root/autodl-tmp/contrastive_learning_138_25_25.h5')
     info_nce = InfoNCELoss(temperature=0.07)  # 损失函数
     dataloader = DataLoaderX(dataset, batch_size=batch, shuffle=True, pin_memory=True, num_workers=4)  # 数据迭代器
     augment = BatchAugment_3d(flip_prob=0.5, rot_prob=0.5, gaussian_noise_std=(0.006, 0.012))  # 数据特征转换
 
     log = open(os.path.join(current_script_path, 'logs\\'+output_name+'.log'), 'w')
     model_name = os.path.join(current_script_path, 'models\\'+output_name + ".pth")
-    device = torch.device('cuda')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
 
     '''训练策略配置'''

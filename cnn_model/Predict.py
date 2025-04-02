@@ -7,7 +7,8 @@ if str(project_root) not in sys.path:
 
 from torch.utils.data import Dataset
 from base_utils.Dataloader_X import DataLoaderX
-from base_utils import Hyperspectral_Image,gdal_utils
+from base_utils import gdal_utils
+from base_utils.core import Hyperspectral_Image
 import numpy as np
 import torch
 from tqdm import tqdm

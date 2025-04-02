@@ -6,7 +6,10 @@ if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
 
 import os.path
-from osgeo import gdal,ogr,osr
+try:
+    from osgeo import gdal,ogr,osr
+except ImportError:
+    print('gdal is not used')
 import numpy as np
 from threading import Lock
 from tqdm import tqdm

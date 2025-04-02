@@ -4,9 +4,12 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent  # 根据实际情况调整
 if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
+try:
+    from osgeo import gdal
+except ImportError:
+    print('gdal is not used')
 
 import numpy as np
-from osgeo import gdal
 from scipy.ndimage import gaussian_filter1d
 from sklearn.preprocessing import StandardScaler
 import tempfile

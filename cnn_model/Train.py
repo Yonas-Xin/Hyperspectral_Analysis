@@ -1,4 +1,3 @@
-
 import sys
 from pathlib import Path
 project_root = Path(__file__).parent.parent  # 根据实际情况调整
@@ -84,7 +83,7 @@ if __name__ == '__main__':
 
 
     '''训练策略配置（不建议修改）'''
-    train_epoch_best_accuracy = 0  # 初始化最佳loss
+    train_epoch_best_loss = 0  # 初始化最佳loss
     no_optim = 0  # 用来记录loss不降的轮数
     print_gpu_info()
     print_info(if_full_cpu)
@@ -109,10 +108,10 @@ if __name__ == '__main__':
             _, predict = torch.max(output,1)
             correct += (predict == label).sum().item()
         end = time.time()
-        avg_loss = running_loss / len(dataloader_train)
+        train_avg_loss = running_loss / len(dataloader_train)
         accuracy = 100 * correct / len(dataset_train)
         current_lr = optimizer.param_groups[0]['lr']
-        result = f"Epoch-{epoch + 1} , Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%, Lr: {current_lr:.8f}, time: {(end - start):.2f}"
+        result = f"Epoch-{epoch + 1} , Loss: {train_avg_loss:.4f}, Accuracy: {accuracy:.2f}%, Lr: {current_lr:.8f}, time: {(end - start):.2f}"
         print(result)
         log.write(result+'\n')
 
@@ -135,11 +134,11 @@ if __name__ == '__main__':
                 print(result)
                 log.write(result+'\n')
 
-        if test_accuracy <= train_epoch_best_accuracy:  # 若当前epoch的loss大于等于之前最小的loss
+        if train_avg_loss >= train_epoch_best_loss:  # 若当前epoch的loss大于等于之前最小的loss
             no_optim += 1
         else:  # 若当前epoch的loss小于之前最小的loss
             no_optim = 0  # loss未降低的轮数归0
-            train_epoch_best_loss = test_accuracy  # 保留当前epoch的loss
+            train_epoch_best_loss = train_avg_loss  # 保留当前epoch的loss
             state = {'model':model.state_dict(), 'optimizer':optimizer.state_dict(), 'epoch': epoch}
             torch.save(state, model_name)
             print(f"模型参数、优化器参数已保存：{model_name}")

@@ -1,9 +1,13 @@
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-from osgeo import gdal
 from threading import Lock
 import h5pickle
+
+try:
+    from osgeo import gdal
+except ImportError:
+    print('gdal is not used')
 def read_tif_with_gdal(tif_path):
     '''读取栅格原始数据
     返回dataset[bands,H,W]'''

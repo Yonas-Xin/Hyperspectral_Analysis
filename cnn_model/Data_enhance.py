@@ -6,8 +6,8 @@ if str(project_root) not in sys.path:
 '''保证项目迁移能够正确导包'''
 
 import numpy as np
-from base_utils.utils import read_txt_to_list,write_list_to_txt
 from contrastive_learning.Feature_transform import BatchAugment_3d
+from base_utils.utils import read_txt_to_list,write_list_to_txt
 import os.path
 from Data import Moni_leaning_dataset
 from base_utils.Dataloader_X import DataLoaderX
@@ -49,6 +49,7 @@ def enhance_dataset(dataset_path_list, out_dir, factor=5, batch = 256):
     datasets_txt_file.flush()
 
 if __name__ == '__main__':
+    pass
     enhance_out_dir_name = 'enhance_data'
     current_dir = os.getcwd()
     enhance_out_dir = os.path.join(current_dir, enhance_out_dir_name)
