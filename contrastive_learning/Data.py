@@ -79,7 +79,7 @@ class SSF_3D_H5(Dataset):
         :return: (影像数据, 标签)
         """
         img = self.data[index]  # 读取 HDF5 数据
-        img = torch.tensor(img, dtype=torch.float32)  # 转换为 Tensor
+        # img = torch.tensor(img, dtype=torch.float32)  # 转换为 Tensor
         return img
     def close(self):
         """关闭 HDF5 文件"""

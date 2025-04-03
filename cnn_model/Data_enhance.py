@@ -10,7 +10,7 @@ from contrastive_learning.Feature_transform import BatchAugment_3d
 from base_utils.utils import read_txt_to_list,write_list_to_txt
 import os.path
 from Data import Moni_leaning_dataset
-from base_utils.Dataloader_X import DataLoaderX
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 from base_utils import gdal_utils
 def enhance_dataset(dataset_path_list, out_dir, factor=5, batch = 256):
@@ -29,7 +29,7 @@ def enhance_dataset(dataset_path_list, out_dir, factor=5, batch = 256):
 
     base_name_lit = [(os.path.basename(dataset_path).split())[0] for dataset_path in dataset_path_list]
     dataset = Moni_leaning_dataset(dataset_path_list)
-    dataloader = DataLoaderX(dataset, shuffle=False, batch_size=batch, num_workers=4)
+    dataloader = DataLoader(dataset, shuffle=False, batch_size=batch, num_workers=4)
     datasets_txt = os.path.join(out_dir, '.enhance_datasets.txt')
 
     datasets_txt_file = open(datasets_txt,'w')

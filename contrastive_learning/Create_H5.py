@@ -7,19 +7,19 @@ if str(project_root) not in sys.path:
 
 import h5py
 from Data import SSF_3D,read_tif_with_gdal
-from base_utils.Dataloader_X import DataLoaderX
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 from base_utils.utils import read_txt_to_list
-def create_h5_dataset(tif_paths, output_h5_path, chunk_size=32):
+def create_h5_dataset(tif_paths, output_h5_path, batch=32):
     """
-    创建HDF5数据集，根据path将所有tif数据压入h5格式的数据中，data为数据集，label为标签，
+    创建HDF5数据集，根据path将所有tif数据压入h5格式的数据中，data为数据集
     数据形状为（num, C, H, W）
     :param tif_paths: TIF文件路径列表
     :param output_h5_path: 输出的HDF5文件路径
     :param chunk_size: HDF5 chunk大小
     """
     datasets = SSF_3D(tif_paths)
-    dataloader = DataLoaderX(datasets, batch_size=chunk_size, shuffle=False, num_workers=4)
+    dataloader = DataLoader(datasets, batch_size=batch, shuffle=False, num_workers=4)
     sample_shape = read_tif_with_gdal(tif_paths[0].split()[0]).shape # 获取第一个样本的形状 (138, 25, 25)
     num_samples = len(datasets)
     with h5py.File(output_h5_path, 'w') as hf:
@@ -28,8 +28,9 @@ def create_h5_dataset(tif_paths, output_h5_path, chunk_size=32):
                                       shape=(num_samples, *sample_shape),
                                       # maxshape=(None, *sample_shape),  # 允许后续扩展
                                       dtype='float32',
-                                      chunks=(chunk_size, *sample_shape),
-                                      compression='gzip')
+                                      chunks=(1, *sample_shape),
+                                      # compression='gzip'
+                                      )
         # 逐步填充数据
         pos = 0  # 记录数据存入的索引
         for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
@@ -39,10 +40,10 @@ def create_h5_dataset(tif_paths, output_h5_path, chunk_size=32):
             pos += batch
 
 if __name__ == '__main__':
-    output_h5_name = 'contrastive_learning_138_25_25.h5'
+    output_h5_name = 'contrastive_learning_138_17_17_1.h5'
     output_h5_path = os.path.join(os.getcwd(),output_h5_name)
-    path1 = read_txt_to_list(r'../data_process/block_clip_for_contrastive_learning1/.datasets.txt')
-    path2 = read_txt_to_list(r'../data_process/block_clip_for_contrastive_learning2/.datasets.txt')
+    path1 = read_txt_to_list(r'D:\Programing\pythonProject\Hyperspectral_Analysis\block_clip_for_contrastive_learning1\.datasets.txt')
+    path2 = read_txt_to_list(r'D:\Programing\pythonProject\Hyperspectral_Analysis\block_clip_for_contrastive_learning2\.datasets.txt')
     path = path1+path2
     create_h5_dataset(path, output_h5_name, 128)
     pass

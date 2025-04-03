@@ -19,7 +19,7 @@ from Data import Moni_leaning_dataset,MoniHDF5_leaning_dataset
 from torch.optim.lr_scheduler import StepLR,ExponentialLR,ReduceLROnPlateau
 
 from base_utils.utils import read_txt_to_list
-from base_utils.Dataloader_X import DataLoaderX
+from torch.utils.data import DataLoader
 
 # 学习率衰减：
 # scheduler = ExponentialLR(optimizer, gamma=0.9) 按照指数衰减
@@ -71,8 +71,8 @@ if __name__ == '__main__':
     '''数据集'''
     dataset_train = MoniHDF5_leaning_dataset(dataset_train)
     dataset_test = MoniHDF5_leaning_dataset(dataset_eval)
-    dataloader_train = DataLoaderX(dataset_train, batch_size=batch, pin_memory=True, shuffle=True, num_workers=4)
-    dataloader_test = DataLoaderX(dataset_test, batch_size=batch, pin_memory=True, shuffle=False, num_workers=4)
+    dataloader_train = DataLoader(dataset_train, batch_size=batch, pin_memory=True, shuffle=True, num_workers=4)
+    dataloader_test = DataLoader(dataset_test, batch_size=batch, pin_memory=True, shuffle=False, num_workers=4)
 
     '''输出模型与日志'''
     current_script_path = Path(__file__).parent  # 获取当前运行脚本的目录

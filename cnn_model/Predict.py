@@ -6,7 +6,7 @@ if str(project_root) not in sys.path:
 '''保证项目迁移能够正确导包'''
 
 from torch.utils.data import Dataset
-from base_utils.Dataloader_X import DataLoaderX
+from torch.utils.data import DataLoader
 from base_utils import gdal_utils
 from base_utils.core import Hyperspectral_Image
 import numpy as np
@@ -91,30 +91,29 @@ if __name__ == '__main__':
     batch = 4
     model_path  = '.models/'
     img = Hyperspectral_Image()
-    img.init(r"D:\Programing\pythonProject\data_store\research_area1.dat", init_fig=False)
-    dataset = Block_Generator(img.get_dataset(scale=1e-4).transpose(2,0,1), block_size=25)
-    dataloader = DataLoaderX(dataset, batch_size=batch, shuffle=False, pin_memory=True, num_workers=4)
+    img.init(r"C:\Users\85002\Desktop\毕设\research_area1.dat", init_fig=False)
+    dataset = Block_Generator(img.get_dataset(scale=1e-4).transpose(2,0,1), block_size=17)
+    dataloader = DataLoader(dataset, batch_size=batch, shuffle=False, pin_memory=True, num_workers=4)
 
-    model = CNN_3d(out_embedding=20, out_classes=8)
+    model = CNN_3d(out_embedding=24, out_classes=8)
     # dic = torch.load(model_path, weights_only=True)
     # model.load_state_dict(dic)
     device = torch.device('cuda')
     model.to(device)
-    predict_map = np.empty((img.rows*img.cols,), dtype=np.int16)
+    predict_map = torch.empty((img.rows*img.cols,), dtype=torch.int16, device=device)
     idx = 0
 
     model.eval()
     with torch.no_grad():
         for block in tqdm(dataloader, total=len(dataloader)):
             batch = block.shape[0]
-            show_img(block[0,:,:,:] .cpu())# 展示滑动窗口
-            model.eval()
-            block = block.unqueeze(1).to(device)
+            # show_img(block[0,:,:,:] .cpu())# 展示滑动窗口
+            block = block.unsqueeze(1).to(device)
             outputs = model(block)
             _, predicted = torch.max(outputs, 1)
-            predict_map[idx:idx+batch,] = predicted.cpu().numpy()
+            predict_map[idx:idx+batch,] = predicted
             idx += batch
-    predict_map = predict_map.reshape(img.rows, img.cols)
+    predict_map = predict_map.reshape(img.rows, img.cols).cpu().numpy()
     np.savez_compressed('predict_map.npz',data=predict_map)
     map = gdal_utils.label_to_rgb(predict_map)
     plt.imshow(map)

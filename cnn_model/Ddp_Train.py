@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
-from base_utils.Dataloader_X import DataLoaderX
+from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import StepLR,ExponentialLR,ReduceLROnPlateau
 from Models import CNN_3d
 from Data import MoniHDF5_leaning_dataset
@@ -69,10 +69,10 @@ def run(rank, world_size):
     train_dataset = MoniHDF5_leaning_dataset(dataset_train)
     test_dataset = MoniHDF5_leaning_dataset(dataset_eval)
     train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
-    train_loader = DataLoaderX(train_dataset, batch_size=batch_size, shuffle=(train_sampler is None),
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=(train_sampler is None),
                                pin_memory=True, num_workers=4, sampler=train_sampler)
     test_sampler = torch.utils.data.distributed.DistributedSampler(test_dataset)
-    test_loader = DataLoaderX(test_dataset, batch_size=batch_size, shuffle=False,
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
                               pin_memory=True, num_workers=4, sampler=test_sampler)
     scheduler = StepLR(optimizer, step_size=50, gamma=0.1)
 

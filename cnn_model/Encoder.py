@@ -84,7 +84,7 @@ class SpectralSpatialCNN_3d(nn.Module):
         self.pool2 = nn.MaxPool3d(2)
         self.conv_block4 = space_speactral_3d(256,256,(3,3,3),(1,1,1),1)
         self.pool3 = nn.MaxPool3d(2)
-        self.linear = nn.Linear(39168, out_features=out_embedding)
+        self.linear = nn.Linear(17408, out_features=out_embedding)
         self.dp = nn.Dropout(p=0.25) # 设置一个dropout层
     def forward(self, x):
         x = self.conv_block1(self.spectral_attention(x))

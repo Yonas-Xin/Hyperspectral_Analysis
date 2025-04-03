@@ -8,7 +8,7 @@ if str(project_root) not in sys.path:
 import os
 from pathlib import Path
 from Data import SSF,SSF_3D,SSF_3D_H5
-from base_utils.Dataloader_X import DataLoaderX
+from torch.utils.data import DataLoader
 import torch
 import torch.optim as optim
 from time import time
@@ -19,7 +19,7 @@ from loss import InfoNCELoss
 from torch.optim.lr_scheduler import CosineAnnealingLR, LambdaLR,ExponentialLR,StepLR
 from tqdm import tqdm
 from multiprocessing import cpu_count
-from base_utils.utils import search_files_in_directory
+from base_utils.utils import read_txt_to_list
 def print_info(mode=True):
     if mode == 1:
         cpu_num = cpu_count()  # 自动获取最大核心数目
@@ -44,7 +44,7 @@ def join_path(path1, path2):
 if __name__ =="__main__":
     """基础配置"""
     epochs = 300  # epoch
-    batch = 24    # batch
+    batch = 4    # batch
     init_lr = 1e-5    # lr
     min_lr = 1e-7
     learning_mode = 0 # 设置为1适合模型调整，0适合模型初期训练
@@ -63,10 +63,12 @@ if __name__ =="__main__":
     '''数据集和增强模块'''
     current_time = get_systime()
     output_name = config_model_name +'_' + current_time  # 模型输出名称
-    # image_paths = search_files_in_directory(r'D:\Programing\pythonProject\Hyperspectral_Analysis\data_process\block_clip','.tif')
-    dataset = SSF_3D_H5('/root/autodl-tmp/contrastive_learning_138_25_25.h5')
+    image_lists = read_txt_to_list(r'D:\Programing\pythonProject\Hyperspectral_Analysis\block_clip_for_contrastive_learning1\.datasets.txt') + read_txt_to_list(
+        r'D:\Programing\pythonProject\Hyperspectral_Analysis\block_clip_for_contrastive_learning2\.datasets.txt'
+    )
+    dataset = SSF_3D(image_lists)
     info_nce = InfoNCELoss(temperature=0.07)  # 损失函数
-    dataloader = DataLoaderX(dataset, batch_size=batch, shuffle=True, pin_memory=True, num_workers=4)  # 数据迭代器
+    dataloader = DataLoader(dataset, batch_size=batch, shuffle=True, pin_memory=True, num_workers=2, prefetch_factor=2, persistent_workers=True)  # 数据迭代器
     augment = BatchAugment_3d(flip_prob=0.5, rot_prob=0.5, gaussian_noise_std=(0.006, 0.012))  # 数据特征转换
 
     log = open(os.path.join(current_script_path, 'logs\\'+output_name+'.log'), 'w')

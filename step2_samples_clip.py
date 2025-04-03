@@ -55,6 +55,6 @@ if __name__ == "__main__":
     print(f"样本标记数据量：{np.sum(mask>0)}")
     if np.sum(mask) < 100000:
         img.sampling_position = mask
-        create_block_sample_3d(img, out_dir, name='Area2_', block_size=25) # 裁剪成块,使用绝对路径
+        create_block_sample_3d(img, out_dir, name='Area2_', block_size=17) # 裁剪成块,使用绝对路径
     else:
         print("数据量限制十万")

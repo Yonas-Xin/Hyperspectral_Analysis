@@ -46,7 +46,7 @@ class Moni_leaning_dataset(Dataset):
 class MoniHDF5_leaning_dataset(Dataset):
     def __init__(self, h5_file):
         self.h5_file = h5_file
-        self.hf = h5pickle.File(self.h5_file, 'r')  # 只读模式
+        self.hf = h5pickle.File(self.h5_file, 'r',rdcc_nbytes=512 * 1024**2)  # 只读模式
         self.data = self.hf['data']
         self.labels = self.hf['labels']
 
